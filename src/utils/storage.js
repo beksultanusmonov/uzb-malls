@@ -12,30 +12,14 @@ export function getStoredMalls() {
     if (data) {
       const parsed = JSON.parse(data)
       if (Array.isArray(parsed) && parsed.length > 0) {
-        // Standart logoUrl'larni mavjud saqlangan ma'lumotlar bilan birlashtirish
-        return parsed.map((storedMall) => {
-          const defaultMall = MALLS_DATA.find((m) => m.id === storedMall.id)
-          if (!defaultMall) return storedMall
-
-          return {
-            ...defaultMall,
-            ...storedMall,
-            brands: (storedMall.brands || []).map((b) => {
-              const defaultBrand = defaultMall.brands?.find((db) => db.id === b.id)
-              if (defaultBrand?.logoUrl && !b.logoUrl) {
-                return { ...b, logoUrl: defaultBrand.logoUrl }
-              }
-              return b
-            })
-          }
-        })
+        return parsed
       }
     }
   } catch (error) {
     console.error('LocalStorage o\'qishda xatolik:', error)
   }
 
-  // Agar mavjud bo'lmasa, boshlang'ich MALLS_DATA'ni saqlaymiz va qaytaramiz
+  // Agar mavjud bo'lmasa, datadagi MALLS_DATA saqlanadi va qaytariladi
   saveStoredMalls(MALLS_DATA)
   return MALLS_DATA
 }
@@ -52,7 +36,7 @@ export function saveStoredMalls(malls) {
 }
 
 /**
- * Ma'lumotlarni asl (boshlang'ich) holatiga qaytarish
+ * Ma'lumotlarni datadagi standart holatiga qaytarish
  */
 export function resetStoredMalls() {
   try {

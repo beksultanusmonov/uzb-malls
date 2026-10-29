@@ -13,7 +13,8 @@ import {
   ArrowLeft,
   CheckCircle2,
   ShieldCheck,
-  Filter
+  Filter,
+  Save
 } from 'lucide-react'
 import { REGIONS } from '../../data/regionsData'
 import { CATEGORIES } from '../../data/mallsData'
@@ -31,6 +32,7 @@ export default function AdminDashboard({
   onUpdateBrand,
   onDeleteBrand,
   onResetMalls,
+  onSaveAsDefault,
   onLogout,
   onCloseAdmin,
   currentTime
@@ -148,11 +150,19 @@ export default function AdminDashboard({
     }
   }
 
-  // Asl holatga qaytarish
+  // Hozirgi holatni standart (default) baza qilib saqlash
+  const handleSaveAsDefault = async () => {
+    if (onSaveAsDefault) {
+      await onSaveAsDefault()
+    }
+    showToast("Hozirgi barcha o'zgarishlar asosiy standart baza (mallsData.js) ga saqlandi!")
+  }
+
+  // Asl holatga qaytarish (Standart holatga)
   const handleReset = () => {
-    if (window.confirm('DIQQAT! Barcha qo\'shilgan va tahrirlangan ma\'lumotlar o\'chiriladi va dastlabki bazaga qaytariladi. Davom etasizmi?')) {
+    if (window.confirm("Barcha ma'lumotlar oxirgi saqlangan standart (default) holatiga qaytariladi. Davom etasizmi?")) {
       onResetMalls()
-      showToast('Barcha ma\'lumotlar dastlabki holatiga qaytarildi!')
+      showToast("Barcha ma'lumotlar standart holatiga qaytarildi!")
     }
   }
 
@@ -183,8 +193,17 @@ export default function AdminDashboard({
             </div>
           </div>
 
-          {/* Harakatlar (Bosh sahifa, Reset, Chiqish) */}
+          {/* Harakatlar (Default saqlash, Bosh sahifa, Reset, Chiqish) */}
           <div className="flex items-center gap-2 sm:gap-3">
+            <button
+              onClick={handleSaveAsDefault}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow-xs transition-colors cursor-pointer"
+              title="Hozirgi barcha o'zgartirilgan ma'lumotlarni doimiy standart (default) baza qilib saqlash"
+            >
+              <Save className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Default qilib saqlash</span>
+            </button>
+
             <button
               onClick={onCloseAdmin}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-semibold border border-zinc-700 transition-colors cursor-pointer"
@@ -197,7 +216,7 @@ export default function AdminDashboard({
             <button
               onClick={handleReset}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-medium border border-zinc-700 transition-colors cursor-pointer"
-              title="Dastlabki ma'lumotlarga qaytarish"
+              title="Standart ma'lumotlarga qaytarish"
             >
               <RotateCcw className="w-3.5 h-3.5 text-amber-400" />
               <span className="hidden md:inline">Qayta tiklash</span>
