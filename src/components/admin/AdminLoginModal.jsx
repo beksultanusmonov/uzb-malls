@@ -78,21 +78,6 @@ export default function AdminLoginModal({
             )}
           </div>
 
-          {/* Demo yordamchi va tezkor kirish */}
-          <div className="flex items-center justify-between text-xs text-zinc-500 bg-zinc-50 p-2.5 rounded-xl border border-zinc-200">
-            <span className="flex items-center gap-1.5">
-              <KeyRound className="w-3.5 h-3.5 text-zinc-400" />
-              <span>Demo parol: <strong className="text-zinc-800 font-mono">admin123</strong></span>
-            </span>
-            <button
-              type="button"
-              onClick={handleQuickDemoLogin}
-              className="text-[11px] font-semibold text-emerald-600 hover:text-emerald-700 underline cursor-pointer"
-            >
-              Tezkor kirish
-            </button>
-          </div>
-
           {/* Tugmalar */}
           <div className="pt-2 flex flex-col gap-2">
             <button
