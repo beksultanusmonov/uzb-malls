@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { ShieldCheck, Lock, ArrowLeft, KeyRound, AlertCircle } from 'lucide-react'
+import { ShieldCheck, Lock, ArrowLeft, AlertCircle } from 'lucide-react'
 
 export default function AdminLoginModal({
   onLoginSuccess,
@@ -18,15 +18,10 @@ export default function AdminLoginModal({
     }
   }
 
-  const handleQuickDemoLogin = () => {
-    setPassword('admin123')
-    onLoginSuccess()
-  }
-
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-950/60 backdrop-blur-xs">
       <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl border border-zinc-200 overflow-hidden animate-modal">
-        
+
         {/* Yuqori Banner */}
         <div className="p-6 bg-zinc-900 text-white text-center relative">
           <button
@@ -51,7 +46,7 @@ export default function AdminLoginModal({
 
         {/* Form Body */}
         <form onSubmit={handleLogin} className="p-6 space-y-4">
-          
+
           <div>
             <label className="block text-xs font-semibold text-zinc-700 mb-1.5">
               Admin parolini kiriting
@@ -94,9 +89,7 @@ export default function AdminLoginModal({
               Bekor qilish
             </button>
           </div>
-
         </form>
-
       </div>
     </div>
   )

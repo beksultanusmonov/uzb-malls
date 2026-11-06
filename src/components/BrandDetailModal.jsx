@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import {
   X,
   Phone,
@@ -8,7 +8,11 @@ import {
   AlertCircle,
   Calendar,
   ExternalLink,
-  Navigation
+  Navigation,
+  Building2,
+  ChevronRight,
+  MapPin,
+  Store
 } from 'lucide-react'
 import { getBrandStatus } from '../utils/workingHours'
 import BrandLogo from './BrandLogo'
@@ -32,9 +36,41 @@ const InstagramIcon = ({ className = 'w-4 h-4' }) => (
 export default function BrandDetailModal({
   brand,
   mall,
+  malls = [],
+  onSelectMall,
   onClose,
   currentTime
 }) {
+  // Ushbu brend mavjud bo'lgan boshqa savdo majmualarini (filiallarini) topish
+  const otherBranches = useMemo(() => {
+    if (!malls || !brand || !mall) return []
+    
+    // Asosiy brend nomini aniqlash (masalan: "LC Waikiki", "KFC", "Terra Pro", "ZARA")
+    const cleanBrandName = (name) => {
+      return (name || '')
+        .toLowerCase()
+        .replace(/(flagship|city mall|mall|samarqand|namangan|buxoro|andijon|farg'ona|toshkent|compass|riviera|next|navro'z|o'zbegim)/gi, '')
+        .trim()
+    }
+    const targetCore = cleanBrandName(brand.name)
+
+    const branches = []
+    malls.forEach((m) => {
+      if (m.id === mall.id) return // Hozirgi mallni o'tkazib yuboramiz
+      (m.brands || []).forEach((b) => {
+        const bCore = cleanBrandName(b.name)
+        if (
+          bCore === targetCore ||
+          b.name.toLowerCase().includes(targetCore) ||
+          targetCore.includes(bCore)
+        ) {
+          branches.push({ mall: m, brand: b })
+        }
+      })
+    })
+    return branches
+  }, [malls, brand, mall])
+
   if (!brand || !mall) return null
 
   const status = getBrandStatus(brand.schedule, currentTime)
@@ -68,7 +104,7 @@ export default function BrandDetailModal({
               <div className="flex flex-wrap items-center gap-2 text-xs text-zinc-500 mt-1">
                 <span>{brand.categoryName}</span>
                 <span className="text-zinc-300">•</span>
-                <span className="font-medium text-zinc-700">{mall.name}</span>
+                <span className="font-semibold text-zinc-800">{mall.name}</span>
                 <span className="text-zinc-300">•</span>
                 <span className="text-zinc-700 font-medium">{brand.floor}</span>
                 {brand.locationCode && (
@@ -138,7 +174,78 @@ export default function BrandDetailModal({
             </div>
           </div>
 
-          {/* 2. Haftalik Ish Jadvali */}
+          {/* 2. MALLga Bog'lanish Kartasi (Qaysi savdo markazida joylashgan) */}
+          <div className="p-3.5 rounded-xl bg-gradient-to-r from-zinc-50 to-blue-50/40 border border-zinc-200/90 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="relative w-12 h-12 rounded-lg overflow-hidden shrink-0 bg-zinc-200 border border-zinc-200">
+                <img src={mall.image} alt={mall.name} className="w-full h-full object-cover" />
+              </div>
+              <div className="min-w-0">
+                <div className="flex items-center gap-1.5 text-[10px] font-bold text-blue-700 uppercase tracking-wider">
+                  <Building2 className="w-3 h-3" />
+                  <span>Savdo Majmuasi</span>
+                </div>
+                <h4 className="font-bold text-sm text-zinc-900 truncate">{mall.name}</h4>
+                <p className="text-xs text-zinc-500 truncate flex items-center gap-1 mt-0.5">
+                  <MapPin className="w-3 h-3 text-zinc-400 shrink-0" />
+                  <span>{mall.city} • {brand.floor} {brand.locationCode ? `(${brand.locationCode})` : ''}</span>
+                </p>
+              </div>
+            </div>
+
+            <a
+              href={mall.googleMapsUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mall.googleSearchQuery || mall.name)}`}
+              target="_blank"
+              rel="noreferrer"
+              className="px-2.5 py-1.5 rounded-lg bg-white border border-zinc-200 text-xs font-semibold text-zinc-700 hover:text-blue-600 hover:border-blue-300 transition-colors flex items-center gap-1 shrink-0 shadow-2xs"
+            >
+              <ExternalLink className="w-3.5 h-3.5 text-blue-500" />
+              <span>Xaritada</span>
+            </a>
+          </div>
+
+          {/* 3. Ushbu Brend Mavjud Bo'lgan Boshqa MALLlar (Filiallar) */}
+          {otherBranches.length > 0 && (
+            <div className="space-y-2 pt-1">
+              <div className="flex items-center justify-between">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-500 flex items-center gap-1.5">
+                  <Store className="w-3.5 h-3.5 text-zinc-400" />
+                  <span>Boshqa MALLlardagi filiallari ({otherBranches.length})</span>
+                </h4>
+                <span className="text-[11px] text-zinc-400">O'tish uchun bosing</span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {otherBranches.map((item) => (
+                  <button
+                    key={item.mall.id + item.brand.id}
+                    onClick={() => {
+                      if (onSelectMall) {
+                        onSelectMall(item.mall, item.brand)
+                      }
+                    }}
+                    className="p-2.5 rounded-xl bg-white border border-zinc-200 hover:border-blue-300 hover:bg-blue-50/40 transition-all text-left flex items-center gap-2.5 cursor-pointer group"
+                    title={`${item.mall.name} dagi filialiga o'tish`}
+                  >
+                    <div className="w-9 h-9 rounded-lg bg-zinc-100 overflow-hidden shrink-0 border border-zinc-200">
+                      <img src={item.mall.image} alt={item.mall.name} className="w-full h-full object-cover" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <h5 className="font-semibold text-xs text-zinc-900 group-hover:text-blue-600 truncate">
+                        {item.mall.name}
+                      </h5>
+                      <p className="text-[11px] text-zinc-500 truncate">
+                        {item.mall.city} • <span className="font-medium text-zinc-700">{item.brand.floor}</span>
+                      </p>
+                    </div>
+                    <ChevronRight className="w-3.5 h-3.5 text-zinc-400 group-hover:text-blue-500 shrink-0" />
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* 4. Haftalik Ish Jadvali */}
           <div>
             <div className="flex items-center gap-2 mb-3">
               <Calendar className="w-4 h-4 text-zinc-500" />
@@ -173,7 +280,7 @@ export default function BrandDetailModal({
             </div>
           </div>
 
-          {/* 3. Do'kon haqida tavsif */}
+          {/* 5. Do'kon haqida tavsif */}
           {brand.description && (
             <div className="space-y-1.5">
               <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-500">
@@ -185,7 +292,7 @@ export default function BrandDetailModal({
             </div>
           )}
 
-          {/* 4. Bog'lanish tugmalari */}
+          {/* 6. Bog'lanish tugmalari */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1">
             {brand.phone && (
               <a

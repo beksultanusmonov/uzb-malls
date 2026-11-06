@@ -3,12 +3,8 @@ import L from 'leaflet'
 import {
   Compass,
   Layers,
-  MapPin,
-  ExternalLink,
-  Navigation,
   Plus,
-  Minus,
-  Star
+  Minus
 } from 'lucide-react'
 import { REGIONS } from '../data/regionsData'
 
@@ -226,53 +222,6 @@ export default function Map({
       
       {/* Asosiy Leaflet Xaritasi */}
       <div ref={mapContainerRef} className="w-full h-full" />
-
-      {/* Tanlangan Mall haqida tezkor mini-kartochka (Pastki chap burchakda) */}
-      {selectedMall && (
-        <div className="absolute bottom-6 left-6 z-[400] max-w-sm bg-white/95 backdrop-blur-md p-3.5 rounded-2xl shadow-xl border border-zinc-200/90 animate-modal hidden sm:block">
-          <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0">
-              <div className="flex items-center gap-1.5 text-xs text-zinc-500 mb-0.5">
-                <MapPin className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                <span className="truncate">{selectedMall.city || selectedMall.regionName}</span>
-              </div>
-              <h3 className="font-bold text-sm text-zinc-900 truncate">
-                {selectedMall.name}
-              </h3>
-              <p className="text-xs text-zinc-500 mt-0.5 truncate">
-                {selectedMall.address}
-              </p>
-            </div>
-
-            <div className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-amber-50 border border-amber-200 text-amber-900 text-xs font-bold shrink-0">
-              <Star className="w-3 h-3 text-amber-500 fill-amber-500" />
-              <span>{selectedMall.rating}</span>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2 mt-2.5 pt-2 border-t border-zinc-100">
-            <a
-              href={selectedMall.googleMapsUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(selectedMall.googleSearchQuery || selectedMall.coords.join(','))}`}
-              target="_blank"
-              rel="noreferrer"
-              className="flex-1 flex items-center justify-center gap-1.5 py-1.5 px-2.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-semibold transition-colors"
-            >
-              <ExternalLink className="w-3.5 h-3.5 text-blue-400" />
-              <span>Google Maps</span>
-            </a>
-            <a
-              href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(selectedMall.googleSearchQuery || selectedMall.coords.join(','))}`}
-              target="_blank"
-              rel="noreferrer"
-              className="flex items-center justify-center gap-1.5 py-1.5 px-2.5 rounded-lg bg-zinc-100 hover:bg-zinc-200 text-zinc-800 text-xs font-medium transition-colors"
-              title="Marshrut chizish"
-            >
-              <Navigation className="w-3.5 h-3.5 text-emerald-600" />
-              <span>Marshrut</span>
-            </a>
-          </div>
-        </div>
-      )}
 
       {/* Xarita qatlami o'zgartirgich (Google Road / Satellite / OSM) */}
       <div className="absolute top-4 right-4 z-[400] flex flex-col items-end">

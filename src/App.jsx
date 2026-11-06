@@ -217,11 +217,30 @@ export default function App() {
     setActiveBrandModal({ brand, mall })
   }
 
-  // Xaritada ko'rsatiladigan mallar ro'yxati (Tanlangan viloyatga mos)
+  // Xaritada ko'rsatiladigan mallar ro'yxati (Qidiruv bo'lsa qidiruvga mos, aks holda tanlangan viloyatga mos)
   const mapMalls = useMemo(() => {
+    const q = (searchTerm || '').toLowerCase().trim()
+    if (q) {
+      return malls.filter((m) => {
+        const matchesName = m.name.toLowerCase().includes(q)
+        const matchesAddress = (m.address || '').toLowerCase().includes(q)
+        const matchesCity = (m.city || '').toLowerCase().includes(q)
+        const matchesRegion = (m.regionName || '').toLowerCase().includes(q)
+        const matchesBrand = (m.brands || []).some(
+          (b) =>
+            b.name.toLowerCase().includes(q) ||
+            (b.categoryName || '').toLowerCase().includes(q) ||
+            (b.description || '').toLowerCase().includes(q) ||
+            (b.discount || '').toLowerCase().includes(q) ||
+            (b.floor || '').toLowerCase().includes(q)
+        )
+        return matchesName || matchesAddress || matchesCity || matchesRegion || matchesBrand
+      })
+    }
+
     if (selectedRegionId === 'all') return malls
     return malls.filter((m) => m.regionId === selectedRegionId)
-  }, [malls, selectedRegionId])
+  }, [malls, selectedRegionId, searchTerm])
 
   // Jami brendlar soni
   const totalBrandsCount = malls.reduce((acc, m) => acc + (m.brands?.length || 0), 0)
@@ -399,6 +418,15 @@ export default function App() {
         <BrandDetailModal
           brand={activeBrandModal.brand}
           mall={activeBrandModal.mall}
+          malls={malls}
+          onSelectMall={(newMall, newBrand) => {
+            setSelectedMall(newMall)
+            if (newBrand) {
+              setActiveBrandModal({ brand: newBrand, mall: newMall })
+            } else {
+              setActiveBrandModal(null)
+            }
+          }}
           onClose={() => setActiveBrandModal(null)}
           currentTime={currentTime}
         />

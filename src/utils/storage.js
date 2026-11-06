@@ -1,6 +1,6 @@
 import { MALLS_DATA } from '../data/mallsData'
 
-const STORAGE_KEY = 'uzbekistan_malls_data_v2'
+const STORAGE_KEY = 'uzbekistan_malls_data_v4'
 const AUTH_KEY = 'uzbekistan_malls_admin_auth'
 
 /**
